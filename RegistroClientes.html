@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ISA - Registrar Cliente</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+    
+    <!-- (SEGURIDAD...) -->
+    <script src="seguridad.js"></script>
+    
+    <style>
+        /* ==========================================
+           SISTEMA DE DISEÑO POLARIS (SHOPIFY EXACTO)
+           ========================================== */
+        :root {
+            --p-surface: #ffffff;
+            --p-background: #f4f6f8;
+            --p-text: #202223;
+            --p-text-subdued: #6d7175;
+            --p-border: #c9cccf;
+            --p-border-subdued: #1e293b;
+            --p-action-primary: #1e293b;
+            --p-action-primary-hover: #0f172a;
+            --p-action-primary-pressed: #020617;
+            --p-interactive: #2c6ecb;
+            --p-shadow-card: 0 0 0 1px rgba(63, 63, 68, 0.05), 0 1px 3px 0 rgba(63, 63, 68, 0.15);
+            --p-shadow-bar: 0 -1px 3px 0 rgba(63, 63, 68, 0.05), 0 -1px 2px 0 rgba(63, 63, 68, 0.15);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body { 
+            background-color: var(--p-background); 
+            color: var(--p-text); 
+            padding-bottom: 90px; 
+        }
+
+        /* ==========================================
+           HEADER (CABECERA) - CENTRADA Y OSCURA
+           ========================================== */
+        .polaris-header {
+            background-color: #1e293b;
+            padding: 16px 20px;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            position: sticky; 
+            top: 0; 
+            z-index: 100;
+            border-bottom: 1px solid var(--p-border-subdued);
+        }
+        .polaris-header .back-btn { 
+            cursor: pointer; 
+            color: #ffffff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: flex-start;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            width: fit-content;
+        }
+        .polaris-header .back-btn:active { background: rgba(255,255,255,0.2); }
+        .polaris-header h1 { 
+            font-size: 18px; 
+            font-weight: 600; 
+            color: #ffffff; 
+            line-height: 1.2; 
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* ==========================================
+           CONTENEDOR Y TARJETAS (CARDS)
+           ========================================== */
+        .form-layout { 
+            padding: 20px; 
+            max-width: 650px; 
+            margin: 0 auto; 
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .polaris-card {
+            background: var(--p-surface);
+            border-radius: 8px;
+            box-shadow: var(--p-shadow-card);
+            overflow: hidden;
+        }
+        
+        .polaris-card-header {
+            padding: 20px 20px 16px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--p-text);
+        }
+
+        .polaris-card-body {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+        @media (min-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } }
+        .full-width { grid-column: 1 / -1; }
+
+        /* ==========================================
+           INPUTS ESTILO SHOPIFY POLARIS
+           ========================================== */
+        .polaris-field { display: flex; flex-direction: column; gap: 6px; }
+        .polaris-label { font-size: 14px; font-weight: 500; color: var(--p-text); }
+        
+        .polaris-input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+        
+        .polaris-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--p-border);
+            border-radius: 4px;
+            font-size: 14px;
+            color: var(--p-text);
+            background-color: var(--p-surface);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            height: 38px;
+        }
+        
+        .polaris-input:focus {
+            outline: none;
+            border-color: var(--p-action-primary);
+            box-shadow: 0 0 0 1px var(--p-action-primary);
+        }
+
+        /* Fuerza visualmente las mayúsculas */
+        #in-nombre, #in-dir { text-transform: uppercase; }
+
+        .prefix { position: absolute; left: 12px; color: var(--p-text-subdued); font-size: 14px; }
+        .has-prefix { padding-left: 36px !important; } 
+
+        /* ==========================================
+           BARRA DE ACCIÓN INFERIOR (BOTTOM BAR)
+           ========================================== */
+        .polaris-bottom-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--p-surface);
+            padding: 16px 20px;
+            box-shadow: var(--p-shadow-bar);
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+        }
+        
+        .status-summary { display: flex; flex-direction: column; }
+        .status-summary span { font-size: 12px; color: var(--p-text-subdued); text-transform: uppercase; letter-spacing: 0.5px;}
+        .status-summary strong { font-size: 16px; font-weight: 600; color: var(--p-action-primary); }
+
+        .polaris-btn-primary {
+            background-color: var(--p-action-primary);
+            color: white;
+            border: 1px solid transparent;
+            padding: 8px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+            transition: background 0.2s;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .polaris-btn-primary:hover { background-color: var(--p-action-primary-hover); }
+        .polaris-btn-primary:active { background-color: var(--p-action-primary-pressed); box-shadow: inset 0 1px 1px rgba(0,0,0,0.1); }
+
+        /* Toast Notification */
+        .polaris-toast {
+            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+            background: #202223; color: white; padding: 12px 16px; border-radius: 4px;
+            font-size: 14px; display: none; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            align-items: center; gap: 8px;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp { from { opacity: 0; bottom: 60px; } to { opacity: 1; bottom: 80px; } }
+
+    </style>
+
+
+
+</head>
+<body>
+
+    <header class="polaris-header">
+        <div class="back-btn" onclick="history.back()">
+            <span class="material-icons-outlined">arrow_back</span>
+        </div>
+        <h1>REGISTRAR CLIENTE</h1>
+        <div style="display: flex; justify-content: flex-end; color: white;">
+            <span class="material-icons-outlined">person_add</span>
+        </div>
+    </header>
+
+    <div class="form-layout">
+        <form id="form-cliente" onsubmit="event.preventDefault(); guardarCliente();">
+            
+            <!-- TARJETA 1: DATOS PRINCIPALES -->
+            <div class="polaris-card">
+                <div class="polaris-card-header">DATOS PRINCIPALES</div>
+                <div class="polaris-card-body form-grid">
+                    <div class="polaris-field full-width">
+                        <label class="polaris-label">DNI / RUC *</label>
+                        <div class="polaris-input-wrapper">
+                            <span class="material-icons-outlined prefix" style="font-size: 18px;">badge</span>
+                            <!-- Límite de 11 caracteres y filtro para permitir SOLO NÚMEROS -->
+                            <input type="text" id="in-dni" class="polaris-input has-prefix" placeholder="Ej. 76945356" required maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                    </div>
+                    
+                    <div class="polaris-field full-width">
+                        <label class="polaris-label">Nombre Completo o Razón Social *</label>
+                        <div class="polaris-input-wrapper">
+                            <span class="material-icons-outlined prefix" style="font-size: 18px;">person</span>
+                            <input type="text" id="in-nombre" class="polaris-input has-prefix" placeholder="Ej. Max Tayson Mendoza" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA 2: DATOS DE CONTACTO -->
+            <div class="polaris-card">
+                <div class="polaris-card-header">DATOS DE CONTACTO</div>
+                <div class="polaris-card-body form-grid">
+                    <div class="polaris-field">
+                        <label class="polaris-label">Número de Celular</label>
+                        <div class="polaris-input-wrapper">
+                            <span class="material-icons-outlined prefix" style="font-size: 18px;">phone_iphone</span>
+                            <input type="tel" id="in-celular" class="polaris-input has-prefix" placeholder="Ej. 987654321">
+                        </div>
+                    </div>
+
+                    <div class="polaris-field">
+                        <label class="polaris-label">Correo Electrónico</label>
+                        <div class="polaris-input-wrapper">
+                            <span class="material-icons-outlined prefix" style="font-size: 18px;">email</span>
+                            <input type="email" id="in-email" class="polaris-input has-prefix" placeholder="correo@empresa.com">
+                        </div>
+                    </div>
+                    
+                    <div class="polaris-field full-width">
+                        <label class="polaris-label">Dirección / Ubicación</label>
+                        <div class="polaris-input-wrapper">
+                            <span class="material-icons-outlined prefix" style="font-size: 18px;">location_on</span>
+                            <input type="text" id="in-dir" class="polaris-input has-prefix" placeholder="Ej. Cajamarca Centro">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- BARRA INFERIOR (GUARDAR) -->
+    <div class="polaris-bottom-bar">
+        <div class="status-summary">
+            <span>Estado</span>
+            <strong>Nuevo Registro</strong>
+        </div>
+        <button type="submit" form="form-cliente" class="polaris-btn-primary">
+            <span class="material-icons-outlined" style="font-size: 18px;">save</span> GUARDAR CLIENTE
+        </button>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="polaris-toast">
+        <span class="material-icons-outlined" style="font-size: 18px;">check_circle</span>
+        <span id="toast-msg">Cliente guardado exitosamente</span>
+    </div>
+
+<script>
+    // ==========================================
+    // INICIALIZACIÓN Y GUARDIÁN DE SESIÓN (ZERO TRUST)
+    // ==========================================
+    window.onload = () => {
+        const sesionStr = localStorage.getItem('isa_sesion');
+        
+        if (!sesionStr) {
+            window.location.href = 'index.html'; // Expulsar si no hay sesión
+            return;
+        }
+
+        const sesion = JSON.parse(sesionStr);
+        
+        // Control RBAC: Logística NO tiene acceso a registrar clientes
+        if (sesion.rol === 'Logística') {
+            alert('Acceso Denegado: Su rol no tiene permisos para interactuar con la base de datos de clientes.');
+            window.location.href = 'BDInventario.html'; // Lo enviamos a su área de trabajo
+            return;
+        }
+    };
+
+    // ==========================================
+    // LÓGICA DE GUARDADO EN LA BASE DE DATOS
+    // ==========================================
+    function guardarCliente() {
+        const dni = document.getElementById('in-dni').value.trim();
+        const nombre = document.getElementById('in-nombre').value.trim().toUpperCase();
+        const celular = document.getElementById('in-celular').value.trim();
+        const email = document.getElementById('in-email').value.trim();
+        const dir = document.getElementById('in-dir').value.trim().toUpperCase();
+
+        if (!dni || !nombre) {
+            alert("Error: El DNI/RUC y el Nombre son obligatorios.");
+            return;
+        }
+
+        // Validación extra de longitud (opcional pero recomendada en Perú)
+        if (dni.length !== 8 && dni.length !== 11) {
+            alert("Error: El documento debe ser un DNI válido de 8 dígitos o un RUC de 11 dígitos.");
+            document.getElementById('in-dni').focus();
+            return;
+        }
+
+        // Obtener la base de datos actual de la memoria del navegador
+        let clientesBD = JSON.parse(localStorage.getItem('isa_clientes_db')) || [];
+        
+        // Evitar duplicados por DNI
+        const existeCliente = clientesBD.some(cliente => cliente.dni === dni && !cliente.anulado);
+        if (existeCliente) {
+            alert(`Error: Ya existe un cliente registrado con el DNI/RUC: ${dni}`);
+            document.getElementById('in-dni').focus();
+            return;
+        }
+
+        // Crear el objeto del nuevo cliente
+        const nuevoCliente = {
+            id: Date.now().toString() + Math.floor(Math.random() * 1000),
+            dni: dni,
+            nombreCompleto: nombre,
+            celular: celular,
+            email: email,
+            direccion: dir,
+            fechaRegistro: new Date().toISOString(),
+            anulado: false
+        };
+        
+        // Agregar el cliente a la lista y guardar en memoria
+        clientesBD.push(nuevoCliente);
+        localStorage.setItem('isa_clientes_db', JSON.stringify(clientesBD));
+
+        // Mostrar notificación visual
+        const toast = document.getElementById('toast');
+        toast.style.display = 'flex';
+        
+        // Redirigir al directorio de clientes después de 1.5 segundos
+        // CORRECCIÓN: El archivo original se llama BDCliente.html (sin S al final)
+        setTimeout(() => { 
+            window.location.href = 'BDCliente.html';
+        }, 1500);
+    }
+</script>
+
+</body>
+</html>
