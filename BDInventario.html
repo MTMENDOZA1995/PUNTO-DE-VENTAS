@@ -7,6 +7,9 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     
+    <!-- LIBRERÍA SHEETJS PARA EXPORTAR A EXCEL REAL -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
     <!-- (SEGURIDAD...) -->
     <script src="seguridad.js"></script>
     
@@ -216,9 +219,6 @@
         @keyframes fadeIn { to { opacity: 1; } }
         @keyframes scaleUp { to { transform: scale(1); } }
     </style>
-
-
-
 </head>
 <body>
 
@@ -509,33 +509,25 @@
         if(datosActuales.length === 0) {
             return mostrarAlerta("Inventario Vacío", "No hay datos en el sistema para exportar a Excel.", "warning");
         }
-        
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Codigo,Nombre,Categoria,Almacen,Stock_Actual,Costo_Unitario_PEN,Precio_Unitario_PEN,Costo_Total_Inv,Precio_Total_Inv\n";
-        
-        datosActuales.forEach(row => {
-            let fila = [
-                row.codigo, 
-                `"${row.nombre.replace(/"/g, '""')}"`,
-                row.categoria,
-                row.almacen,
-                row.stockActual.toFixed(2), 
-                row.costoUnitario.toFixed(2), 
-                row.precioUnitario.toFixed(2), 
-                Math.max(0, row.costoTotal).toFixed(2), 
-                Math.max(0, row.precioTotal).toFixed(2)
-            ];
-            
-            csvContent += fila.join(",") + "\n";
-        });
-        
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Reporte_Stock_ISA_${new Date().toISOString().split('T')[0]}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+
+        // Mapear los datos para Excel
+        const datosExcel = datosActuales.map(row => ({
+            "Código SKU": row.codigo,
+            "Nombre del Producto": row.nombre,
+            "Categoría": row.categoria,
+            "Almacén": row.almacen,
+            "Stock Actual": parseFloat(row.stockActual.toFixed(2)),
+            "Costo Unitario (PEN)": parseFloat(row.costoUnitario.toFixed(2)),
+            "Precio Unitario (PEN)": parseFloat(row.precioUnitario.toFixed(2)),
+            "Costo Total Inventario": parseFloat(Math.max(0, row.costoTotal).toFixed(2)),
+            "Valorización Total": parseFloat(Math.max(0, row.precioTotal).toFixed(2))
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(datosExcel);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Stock Actual");
+
+        XLSX.writeFile(workbook, `Reporte_Stock_ISA_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
 
     // ==========================================
