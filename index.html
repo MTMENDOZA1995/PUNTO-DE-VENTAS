@@ -6,9 +6,6 @@
     <title>ISA - Inicio de Sesión</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     
-    <!-- CONECTAMOS EL GUARDIÁN GLOBAL (Aunque en el index actúa diferente) -->
-
-
     <style>
         /* ==========================================
            SISTEMA DE DISEÑO POLARIS (LOGIN PRO)
@@ -228,10 +225,27 @@
 
 <script>
     // ==========================================
+    // BLOQUEO DE CURIOSOS (ANTI-INSPECCIÓN PARA EL LOGIN)
+    // ==========================================
+    // Bloquea el Click Derecho
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault(); 
+    });
+
+    // Bloquea F12, Ctrl+Shift+I, Ctrl+U y otros atajos
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'F12' || 
+           (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) || 
+           (e.ctrlKey && (e.key === 'U' || e.key === 'u'))) {
+            e.preventDefault();
+        }
+    });
+
+    // ==========================================
     // INICIALIZACIÓN DE SEGURIDAD
     // ==========================================
     window.onload = () => {
-        // Limpiar cualquier sesión colgada (Por si seguridad.js no lo hizo)
+        // Limpiar cualquier sesión colgada
         localStorage.removeItem('isa_sesion');
         sessionStorage.removeItem('isa_sesion_activa');
 
@@ -399,7 +413,6 @@
             }
 
             // Creamos la sesión oficial en localStorage
-            // (Nuestro archivo seguridad.js la atrapará en la siguiente página y la pasará a memoria volátil)
             const sesionData = {
                 id: usuarioEncontrado.id,
                 dni: usuarioEncontrado.dni,
@@ -412,11 +425,9 @@
 
             // ENRUTAMIENTO PROFESIONAL (ROLE-BASED)
             if (usuarioEncontrado.rol === 'Vendedor') {
-                window.location.href = 'RegistroSalidas.html'; // Los cajeros van directo a vender
-            } else if (usuarioEncontrado.rol === 'Logística') {
-                window.location.href = 'RegistroIngresos.html'; // Ingreso de productos
+                window.location.href = 'RegistroSalidas.html'; // El cajero va directo a vender
             } else {
-                window.location.href = 'Control.html'; // Gerentes y Admins van al Panel Maestro
+                window.location.href = 'Control.html'; // Logística, Gerentes y Admins van al Menú Principal
             }
 
         }, 800); 
