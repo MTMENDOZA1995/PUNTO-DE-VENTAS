@@ -309,7 +309,7 @@
                             <input type="text" id="in-precio-calculado" class="polaris-input has-prefix" value="0.00" readonly style="font-weight: 600; color: var(--p-action-primary); background-color: #f0fdf4; border-color: #bbf7d0;">
                         </div>
                         <span style="font-size: 10px; color: var(--p-text-subdued); margin-top: 2px;">
-                            (Costo / Cant) × 2.5 + IGV
+                            (Costo / Cant) × 3 + IGV
                         </span>
                     </div>
                 </div>
@@ -443,7 +443,7 @@
 
         if (cantidad > 0 && costoTotal > 0) {
             const costoUnitario = costoTotal / cantidad;
-            const precioBase = costoUnitario * 2.5;
+            const precioBase = costoUnitario * 3;
             precioVentaSugerido = precioBase * 1.18;
         }
         
