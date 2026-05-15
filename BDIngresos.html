@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     
-    <!-- (SEGURIDAD...) -->
     <script src="seguridad.js"></script>
     
     <style>
@@ -106,8 +105,31 @@
         }
         .search-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(30, 41, 59, 0.1); background: var(--surface);}
         
-        .btn-limpiar { background: #f1f5f9; color: var(--secondary); border: none; padding: 6px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 8px; transition: background 0.2s;}
-        .btn-limpiar:hover { background: #e2e8f0; }
+        /* BOTÓN LIMPIAR FILTROS (Estilo Píldora Profesional Consistente) */
+        .btn-limpiar { 
+            background: var(--surface); 
+            color: var(--text-muted); 
+            border: 1px solid var(--border); 
+            padding: 4px 12px; 
+            border-radius: 16px; 
+            font-size: 11px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 4px; 
+            margin-top: 10px; 
+            margin-left: auto; /* Alineación a la derecha */
+            width: fit-content; /* Se ajusta a su contenido */
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .btn-limpiar:hover { 
+            background: var(--bg-body); 
+            color: var(--primary); 
+            border-color: var(--text-muted); 
+        }
 
         /* ==========================================
            ZONA DESLIZABLE (SCROLL EXCLUSIVO)
@@ -217,15 +239,9 @@
             padding: 12px 16px; border-radius: 4px; font-size: 14px; display: none; z-index: 1000; align-items: center; gap: 8px;
         }
     </style>
-
-
-
 </head>
 <body>
 
-    <!-- ==========================================
-         SECCIÓN FIJA (HEADER + KPIs + BÚSQUEDA)
-         ========================================== -->
     <div class="top-fixed-section">
         <header class="header">
             <div style="display: flex; justify-content: flex-start; width: 32px;"></div>
@@ -269,23 +285,15 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         SECCIÓN DESLIZABLE (SCROLL LIST)
-         ========================================== -->
     <div class="scrollable-list">
         <div class="entry-list" id="entradas-container">
-            <!-- Generado dinámicamente por JS -->
-        </div>
+            </div>
     </div>
 
     <button class="fab-add" onclick="window.location.href='RegistroIngresos.html'" title="Nueva Entrada">
         <span class="material-icons-round" style="font-size: 28px;">add</span>
     </button>
 
-    <!-- ==========================================
-         MODALES DE SISTEMA Y TOASTS
-         ========================================== -->
-    
     <div id="modal-confirm" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header warning">
@@ -306,6 +314,11 @@
     </div>
 
 <script>
+    // Función para obtener la BD siempre actualizada
+    function obtenerEntradas() {
+        return JSON.parse(localStorage.getItem('isa_ingresos_db')) || [];
+    }
+
     let confirmCallback = null;
 
     function mostrarConfirmacion(mensaje, callback) {
@@ -331,9 +344,11 @@
         setTimeout(() => { toast.style.display = 'none'; }, 2500);
     }
 
-    let entradasDB = JSON.parse(localStorage.getItem('isa_ingresos_db')) || [];
     const formatoSoles = new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' });
 
+    // ==========================================
+    // RENDERIZADO CON SAFE FALLBACKS
+    // ==========================================
     function renderizarEntradas(datos) {
         const contenedor = document.getElementById('entradas-container');
         contenedor.innerHTML = '';
@@ -360,8 +375,12 @@
             const costoLote = parseFloat(item.costoTotalUSD || item.costoTotalPEN || item.costoTotal) || 0;
             const cantidad = parseFloat(item.cant) || 0;
             const precioSug = parseFloat(item.precioUnitarioPEN) || 0;
+            
+            // Textos seguros en caso de datos antiguos vacíos
             const nombreSeguro = item.nombre || "SIN NOMBRE";
             const codSeguro = item.cod || "SIN CODIGO";
+            const categoriaSegura = item.categoria || "N/A";
+            const almacenSeguro = item.almacen || "N/A";
             
             let fechaMostrada = item.fecha || "--/--/----";
             if(fechaMostrada.includes('-')) {
@@ -385,7 +404,7 @@
                 
                 <div class="entry-card-body">
                     <div class="product-title">${nombreSeguro}</div>
-                    <div class="product-meta">Cód: <strong>${codSeguro}</strong> | Cat: ${item.categoria || "N/A"} | Alm: ${item.almacen || "N/A"}</div>
+                    <div class="product-meta">Cód: <strong>${codSeguro}</strong> | Cat: ${categoriaSegura} | Alm: ${almacenSeguro}</div>
                     
                     <div class="financial-grid">
                         <div class="fin-item" style="grid-column: span 2; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
@@ -420,16 +439,22 @@
         document.getElementById('txt-count').innerText = registrosActivos;
     }
 
+    // ==========================================
+    // BÚSQUEDA BLINDADA (SAFE FALLBACKS)
+    // ==========================================
     function aplicarFiltros() {
-        const valDoc = document.getElementById('filtro-doc').value.toLowerCase();
+        const valDoc = document.getElementById('filtro-doc').value.toLowerCase().trim();
         let valFecha = document.getElementById('filtro-fecha').value; 
-        const valCodigo = document.getElementById('filtro-codigo').value.toLowerCase();
-        const valNombre = document.getElementById('filtro-nombre').value.toLowerCase();
+        const valCodigo = document.getElementById('filtro-codigo').value.toLowerCase().trim();
+        const valNombre = document.getElementById('filtro-nombre').value.toLowerCase().trim();
 
-        const datosFiltrados = entradasDB.filter(item => {
-            const matchDoc = (item.doc || "").toLowerCase().includes(valDoc);
-            const matchCodigo = (item.cod || "").toLowerCase().includes(valCodigo);
-            const matchNombre = (item.nombre || "").toLowerCase().includes(valNombre);
+        const bdActual = obtenerEntradas();
+
+        const datosFiltrados = bdActual.filter(item => {
+            // Conversiones seguras a String para evitar errores "toLowerCase is not a function"
+            const matchDoc = (item.doc || "").toString().toLowerCase().includes(valDoc);
+            const matchCodigo = (item.cod || "").toString().toLowerCase().includes(valCodigo);
+            const matchNombre = (item.nombre || "").toString().toLowerCase().includes(valNombre);
             
             let matchFecha = true;
             if (valFecha !== "") {
@@ -450,19 +475,24 @@
         aplicarFiltros();
     }
 
+    // ==========================================
+    // ANULACIÓN CON ACTUALIZACIÓN EN TIEMPO REAL
+    // ==========================================
     function anularEntrada(idUnico) {
         mostrarConfirmacion(
             "¿Está seguro que desea ANULAR este ingreso?\n\nEl registro pasará a estado inactivo y dejará de sumar dinero y stock en el inventario general.",
             () => {
-                entradasDB = entradasDB.map(item => {
+                let bdActual = obtenerEntradas();
+                
+                bdActual = bdActual.map(item => {
                     if(item.id === idUnico) {
                         item.anulado = true; 
                     }
                     return item;
                 });
                 
-                localStorage.setItem('isa_ingresos_db', JSON.stringify(entradasDB));
-                aplicarFiltros();
+                localStorage.setItem('isa_ingresos_db', JSON.stringify(bdActual));
+                aplicarFiltros(); // Recarga la vista con los datos actualizados
                 mostrarToast("Ingreso anulado correctamente.");
             }
         );
@@ -493,7 +523,9 @@
         // Si es Logística, Gerente o Admin, cargamos la página
         const hoy = new Date();
         document.getElementById('txt-fecha').innerHTML = `Generado: <strong>${hoy.toLocaleDateString('es-PE')}</strong>`;
-        renderizarEntradas(entradasDB);
+        
+        // Cargamos la BD inicial
+        renderizarEntradas(obtenerEntradas());
     };
 </script>
 
