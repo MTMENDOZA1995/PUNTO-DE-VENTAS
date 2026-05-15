@@ -1,5 +1,5 @@
 // ==========================================
-// TICKET.JS - CEREBRO DE IMPRESIÓN (VERSIÓN DINÁMICA)
+// TICKET.JS - CEREBRO DE IMPRESIÓN (VERSIÓN DINÁMICA PRO)
 // ==========================================
 
 // Formateador de moneda oficial para Perú
@@ -23,17 +23,27 @@ function imprimirTicketGlobal(ventaObj) {
         mensajeFinal: "¡Gracias por su preferencia!"
     };
 
+    // Variable dinámica para el porcentaje del IGV
+    const igvPorcentaje = configGuardada.igv !== undefined ? configGuardada.igv : 18;
+
+    // Fallbacks seguros para evitar que el ticket colapse (Crash) si falta algún dato
+    const nomVendedor = ventaObj.nombreVendedor ? ventaObj.nombreVendedor.split(' ')[0] : (ventaObj.idVendedor || "Caja");
+    const boletaSegura = String(ventaObj.boleta || '0').padStart(6, '0');
+    const fechaSegura = ventaObj.fecha || "--/--/----";
+    const clienteSeguro = ventaObj.nombreCliente || "Cliente General";
+    const dniSeguro = ventaObj.dniCliente || "S/D";
+
     // 2. CONSTRUIR LA TABLA DE PRODUCTOS
     let productosHTML = "";
-    if(ventaObj.productos && ventaObj.productos.length > 0) {
+    if(ventaObj.productos && Array.isArray(ventaObj.productos) && ventaObj.productos.length > 0) {
         ventaObj.productos.forEach(p => {
             productosHTML += `
-                <tr><td colspan="4" class="left" style="padding-bottom:2px; font-size:11px;">${p.nombre}</td></tr>
+                <tr><td colspan="4" class="left" style="padding-bottom:2px; font-size:11px;">${p.nombre || 'Producto'}</td></tr>
                 <tr>
                     <td></td>
-                    <td class="center">${p.cantidad}</td>
-                    <td class="right">${formatoSolesTicket.format(p.precio)}</td>
-                    <td class="right">${formatoSolesTicket.format(p.subtotal)}</td>
+                    <td class="center">${p.cantidad || 1}</td>
+                    <td class="right">${formatoSolesTicket.format(p.precio || 0)}</td>
+                    <td class="right">${formatoSolesTicket.format(p.subtotal || 0)}</td>
                 </tr>
             `;
         });
@@ -43,9 +53,9 @@ function imprimirTicketGlobal(ventaObj) {
             <tr><td colspan="4" class="left" style="padding-bottom:2px; font-size:11px;">${ventaObj.nombreProd || 'Producto'}</td></tr>
             <tr>
                 <td></td>
-                <td class="center">${ventaObj.cantidad}</td>
+                <td class="center">${ventaObj.cantidad || 1}</td>
                 <td class="right">${formatoSolesTicket.format(ventaObj.precioUn || 0)}</td>
-                <td class="right">${formatoSolesTicket.format(ventaObj.total)}</td>
+                <td class="right">${formatoSolesTicket.format(ventaObj.total || 0)}</td>
             </tr>
         `;
     }
@@ -58,7 +68,8 @@ function imprimirTicketGlobal(ventaObj) {
 
     let igvFilaHTML = "";
     if (ventaObj.igv && parseFloat(ventaObj.igv) > 0) {
-        igvFilaHTML = `<tr><td class="right">IGV (18%):</td><td class="right">${formatoSolesTicket.format(ventaObj.igv)}</td></tr>`;
+        // Inyectamos el porcentaje de IGV dinámico configurado por el dueño
+        igvFilaHTML = `<tr><td class="right">IGV (${igvPorcentaje}%):</td><td class="right">${formatoSolesTicket.format(ventaObj.igv)}</td></tr>`;
     }
 
     let bolsaFilaHTML = "";
@@ -101,17 +112,17 @@ function imprimirTicketGlobal(ventaObj) {
             ${ventaObj.anulado ? '<div class="center bold mb-2" style="font-size:16px;">*** VENTA ANULADA ***</div>' : ''}
 
             <div class="flex-row">
-                <div>BOLETA: BOL-${String(ventaObj.boleta).padStart(6, '0')}</div>
+                <div>BOLETA: BOL-${boletaSegura}</div>
                 <div>Pago: ${ventaObj.tipoPago || 'Efectivo'}</div>
             </div>
             <div class="flex-row">
-                <div>Fecha: ${ventaObj.fecha}</div>
-                <div>Cajero: ${ventaObj.nombreVendedor.split(' ')[0]}</div>
+                <div>Fecha: ${fechaSegura}</div>
+                <div>Cajero: ${nomVendedor}</div>
             </div>
-            <div class="left mb-1" style="font-size: 11px;">DNI/RUC: ${ventaObj.dniCliente}</div>
-            <div class="left mb-1" style="font-size: 11px;">Cliente: ${ventaObj.nombreCliente}</div>
+            <div class="left mb-1" style="font-size: 11px;">DNI/RUC: ${dniSeguro}</div>
+            <div class="left mb-1" style="font-size: 11px;">Cliente: ${clienteSeguro}</div>
             
-            <div class="barcode">*${String(ventaObj.boleta).padStart(6, '0')}*</div>
+            <div class="barcode">*${boletaSegura}*</div>
             
             <div class="line"></div>
             <table>
@@ -139,7 +150,7 @@ function imprimirTicketGlobal(ventaObj) {
             </table>
             
             <div class="center bold" style="margin-top:15px;">${DATOS_EMPRESA.mensajeFinal}</div>
-            <div class="center" style="font-size:9px; margin-top:5px;"> M.E.F - ENGINEERING & HSSE SOLUTIONS</div>
+            <div class="center" style="font-size:9px; margin-top:5px;"> M.E.F. ENGINEERING & HSSE SOLUTIONS</div>
             <br><br><br>
         </body>
         </html>
