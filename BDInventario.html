@@ -7,10 +7,8 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
     
-    <!-- LIBRERÍA SHEETJS PARA EXPORTAR A EXCEL REAL -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
-    <!-- (SEGURIDAD...) -->
     <script src="seguridad.js"></script>
     
     <style>
@@ -107,6 +105,34 @@
             background: var(--p-background); transition: border 0.2s;
         }
         .search-input:focus { outline: none; border-color: var(--p-interactive); background: var(--p-surface);}
+
+        /* ------------------------------------------------------------------
+           BOTÓN DE LIMPIAR FILTROS (DISEÑO PROFESIONAL Y PEQUEÑO)
+           ------------------------------------------------------------------ */
+        .btn-limpiar { 
+            background: #ffffff; 
+            color: var(--p-text-subdued); 
+            border: 1px solid var(--p-border); 
+            padding: 4px 12px; 
+            border-radius: 16px; 
+            font-size: 11px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 4px; 
+            margin-top: 10px; 
+            margin-left: auto; /* Lo alinea elegantemente a la derecha */
+            width: fit-content; /* Ajusta el tamaño solo al contenido */
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .btn-limpiar:hover { 
+            background: #f4f6f8; 
+            color: var(--p-action-primary); 
+            border-color: var(--p-border-subdued); 
+        }
 
         .kpi-count { padding: 5px 20px 0; font-size: 12px; color: var(--p-text-subdued); font-weight: 600; max-width: 900px; margin: 0 auto;}
 
@@ -222,19 +248,14 @@
 </head>
 <body>
 
-    <!-- ==========================================
-         SECCIÓN FIJA (HEADER + KPIs + BÚSQUEDA)
-         ========================================== -->
     <div class="top-fixed-section">
         <header class="polaris-header">
             <div style="display: flex; justify-content: flex-start;">
-                <!-- Espacio vacío a la izquierda para centrar el título -->
-            </div>
+                </div>
             
             <h1 id="header-titulo">STOCK DE PRODUCTOS</h1>
             
             <div style="display: flex; justify-content: flex-end;">
-                <!-- Ícono funcional para regresar a Control.html posicionado a la derecha -->
                 <span class="material-icons-round header-icon-btn" onclick="window.location.href='Control.html'" title="Volver al Panel" style="font-size: 24px;">inventory_2</span>
             </div>
         </header>
@@ -264,6 +285,9 @@
                 <input type="text" id="filtro-cat" class="search-input" placeholder="Categoría" onkeyup="aplicarFiltros()">
                 <input type="text" id="filtro-nombre" class="search-input" placeholder="Nombre de Producto" onkeyup="aplicarFiltros()" style="grid-column: 1 / -1;">
             </div>
+            <button type="button" class="btn-limpiar" onclick="limpiarFiltros()">
+                <span class="material-icons-outlined" style="font-size: 14px;">filter_alt_off</span> Limpiar Filtros
+            </button>
         </div>
 
         <div class="kpi-count">
@@ -271,21 +295,15 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         SECCIÓN DESLIZABLE (SCROLL LIST)
-         ========================================== -->
     <div class="scrollable-list">
         <div class="inventory-list" id="contenedor-inventario">
-            <!-- Generado dinámicamente -->
-        </div>
+            </div>
     </div>
 
-    <!-- BOTÓN FLOTANTE (FAB) PARA EXPORTAR -->
     <button class="fab-export" onclick="exportarDatos()" title="Exportar a Excel">
         <span class="material-icons-outlined" style="font-size: 24px;">file_download</span>
     </button>
 
-    <!-- MODAL DE ALERTA -->
     <div id="modal-alerta" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header" id="alerta-header">
@@ -333,6 +351,10 @@
         const ventasGuardadas = JSON.parse(localStorage.getItem('isa_ventas_db')) || [];
         const inventarioAgrupado = {};
 
+        // Configuración Global para Descuento Máximo Dinámico
+        const configGlobal = JSON.parse(localStorage.getItem('isa_config')) || {};
+        const maxDescuentoLocal = configGlobal.descmax !== undefined ? configGlobal.descmax : 50;
+
         // A. Sumar todas las ENTRADAS
         ingresosGuardados.forEach(ingreso => {
             if (!ingreso.anulado) {
@@ -348,7 +370,7 @@
                         salidas: 0, 
                         costoUnitario: 0,
                         precioUnitario: 0,
-                        desc: 70 // Límite máximo general que establecimos
+                        desc: maxDescuentoLocal // Ahora lee de la configuración, no está hardcoded
                     };
                 }
                 
@@ -482,23 +504,33 @@
     }
 
     // ==========================================
-    // SISTEMA DE BÚSQUEDA MÚLTIPLE
+    // SISTEMA DE BÚSQUEDA MÚLTIPLE (SAFE FALLBACKS)
     // ==========================================
     function aplicarFiltros() {
-        const valCodigo = document.getElementById('filtro-codigo').value.toLowerCase();
-        const valNombre = document.getElementById('filtro-nombre').value.toLowerCase();
-        const valCat = document.getElementById('filtro-cat').value.toLowerCase();
+        const valCodigo = document.getElementById('filtro-codigo').value.toLowerCase().trim();
+        const valNombre = document.getElementById('filtro-nombre').value.toLowerCase().trim();
+        const valCat = document.getElementById('filtro-cat').value.toLowerCase().trim();
 
         const datosProcesados = procesarDatos();
         
         const datosFiltrados = datosProcesados.filter(item => {
-            const matchCodigo = item.codigo.toLowerCase().includes(valCodigo);
-            const matchNombre = item.nombre.toLowerCase().includes(valNombre);
-            const matchCat = item.categoria.toLowerCase().includes(valCat);
+            // Se usa string conversion para evitar el error "toLowerCase is not a function" si el dato está vacío
+            const matchCodigo = (item.codigo || "").toString().toLowerCase().includes(valCodigo);
+            const matchNombre = (item.nombre || "").toString().toLowerCase().includes(valNombre);
+            const matchCat = (item.categoria || "").toString().toLowerCase().includes(valCat);
+            
             return matchCodigo && matchNombre && matchCat;
         });
 
         renderizarInventario(datosFiltrados);
+    }
+
+    // FUNCION AÑADIDA: Para hacer funcional el botón "Limpiar Filtros"
+    function limpiarFiltros() {
+        document.getElementById('filtro-codigo').value = '';
+        document.getElementById('filtro-nombre').value = '';
+        document.getElementById('filtro-cat').value = '';
+        aplicarFiltros();
     }
 
     // ==========================================
@@ -516,11 +548,11 @@
             "Nombre del Producto": row.nombre,
             "Categoría": row.categoria,
             "Almacén": row.almacen,
-            "Stock Actual": parseFloat(row.stockActual.toFixed(2)),
-            "Costo Unitario (PEN)": parseFloat(row.costoUnitario.toFixed(2)),
-            "Precio Unitario (PEN)": parseFloat(row.precioUnitario.toFixed(2)),
-            "Costo Total Inventario": parseFloat(Math.max(0, row.costoTotal).toFixed(2)),
-            "Valorización Total": parseFloat(Math.max(0, row.precioTotal).toFixed(2))
+            "Stock Actual": parseFloat(Number(row.stockActual || 0).toFixed(2)),
+            "Costo Unitario (PEN)": parseFloat(Number(row.costoUnitario || 0).toFixed(2)),
+            "Precio Unitario (PEN)": parseFloat(Number(row.precioUnitario || 0).toFixed(2)),
+            "Costo Total Inventario": parseFloat(Math.max(0, row.costoTotal || 0).toFixed(2)),
+            "Valorización Total": parseFloat(Math.max(0, row.precioTotal || 0).toFixed(2))
         }));
 
         const worksheet = XLSX.utils.json_to_sheet(datosExcel);
