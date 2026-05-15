@@ -6,9 +6,7 @@
     <title>ISA - Registro de Ingreso</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
     
-    <!-- (SEGURIDAD...) -->
     <script src="seguridad.js"></script>
-    <!-- LIBRERÍA SHEETJS PARA LEER EXCEL EN EL NAVEGADOR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
@@ -34,80 +32,41 @@
         }
 
         * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
+            box-sizing: border-box; margin: 0; padding: 0; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             -webkit-tap-highlight-color: transparent;
         }
         
-        body { 
-            background-color: var(--p-background); 
-            color: var(--p-text); 
-            padding-bottom: 90px; 
-        }
+        body { background-color: var(--p-background); color: var(--p-text); padding-bottom: 90px; }
 
-        /* ==========================================
-           HEADER (CABECERA) - CENTRADA Y OSCURA
-           ========================================== */
+        /* HEADER (CABECERA) */
         .polaris-header {
-            background-color: #1e293b;
-            padding: 16px 20px;
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            position: sticky; 
-            top: 0; 
-            z-index: 100;
-            border-bottom: 1px solid var(--p-border-subdued);
+            background-color: #1e293b; padding: 16px 20px; display: grid; grid-template-columns: 1fr auto 1fr;
+            align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--p-border-subdued);
         }
-        
-        .polaris-header h1 { 
-            font-size: 18px; font-weight: 600; color: #ffffff; line-height: 1.2; text-align: center; text-transform: uppercase; 
-        }
-
-        .icon-btn {
-            color: white; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;
-            padding: 4px; border-radius: 4px;
-        }
+        .polaris-header h1 { font-size: 18px; font-weight: 600; color: #ffffff; line-height: 1.2; text-align: center; text-transform: uppercase; }
+        .icon-btn { color: white; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px; }
         .icon-btn:hover { background: rgba(255,255,255,0.1); }
         .icon-btn:active { background: rgba(255,255,255,0.2); }
 
-        /* ==========================================
-           CONTENEDOR Y TARJETAS (CARDS)
-           ========================================== */
-        .form-layout { 
-            padding: 16px; max-width: 650px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px;
-        }
-
-        .polaris-card {
-            background: var(--p-surface); border-radius: 8px; box-shadow: var(--p-shadow-card); overflow: hidden;
-        }
-        
-        .polaris-card-header {
-            padding: 16px 16px 12px 16px; font-size: 15px; font-weight: 600; color: var(--p-text);
-        }
-
-        .polaris-card-body {
-            padding: 0 16px 16px 16px; display: flex; flex-direction: column; gap: 12px;
-        }
+        /* CONTENEDOR Y TARJETAS */
+        .form-layout { padding: 16px; max-width: 650px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+        .polaris-card { background: var(--p-surface); border-radius: 8px; box-shadow: var(--p-shadow-card); overflow: hidden; }
+        .polaris-card-header { padding: 16px 16px 12px 16px; font-size: 15px; font-weight: 600; color: var(--p-text); }
+        .polaris-card-body { padding: 0 16px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
 
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .full-width { grid-column: 1 / -1; }
 
-        /* ==========================================
-           INPUTS ESTILO SHOPIFY POLARIS
-           ========================================== */
+        /* INPUTS ESTILO POLARIS */
         .polaris-field { display: flex; flex-direction: column; gap: 4px; }
         .polaris-label { font-size: 13px; font-weight: 500; color: var(--p-text); line-height: 1.2;}
-        
         .polaris-input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
         
         .polaris-input {
             width: 100%; padding: 6px 10px; border: 1px solid var(--p-border); border-radius: 4px; font-size: 14px;
             color: var(--p-text); background-color: var(--p-surface); transition: border-color 0.2s, box-shadow 0.2s; height: 34px; 
         }
-        
         .polaris-input:focus { outline: none; border-color: var(--p-action-primary); box-shadow: 0 0 0 1px var(--p-action-primary); }
         .polaris-input:disabled, .polaris-input[readonly] { background-color: #fafbfb; color: var(--p-text-subdued); border-color: var(--p-border-subdued); cursor: not-allowed; }
 
@@ -122,9 +81,7 @@
         }
         .action-icon:active { background: #f0f2f4; color: var(--p-text); }
 
-        /* ==========================================
-           BARRA DE ACCIÓN INFERIOR (BOTTOM BAR)
-           ========================================== */
+        /* BARRA DE ACCIÓN INFERIOR */
         .polaris-bottom-bar {
             position: fixed; bottom: 0; left: 0; width: 100%; background: var(--p-surface); padding: 12px 20px;
             box-shadow: var(--p-shadow-bar); display: flex; justify-content: space-between; align-items: center; z-index: 100;
@@ -142,9 +99,7 @@
         .polaris-btn-primary:hover { background-color: var(--p-action-primary-hover); }
         .polaris-btn-primary:active { background-color: var(--p-action-primary-pressed); box-shadow: inset 0 1px 1px rgba(0,0,0,0.1); }
 
-        /* ==========================================
-           CONTENEDOR DE BOTONES FLOTANTES (CÍRCULOS)
-           ========================================== */
+        /* BOTONES FLOTANTES */
         .fab-container { position: fixed; bottom: 85px; right: 16px; display: flex; flex-direction: column; gap: 12px; z-index: 90; }
         .fab-button {
             color: white; border: none; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center;
@@ -154,9 +109,7 @@
         .fab-template { background-color: var(--p-interactive); } .fab-template:hover { background-color: #1f5199; }
         .fab-import { background-color: #108043; margin: 0; } .fab-import:hover { background-color: #0b5c30; }
 
-        /* ==========================================
-           SISTEMA DE MODALES Y ALERTAS PRO
-           ========================================== */
+        /* MODALES Y TOASTS */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(32, 34, 35, 0.8);
             display: none; justify-content: center; align-items: center; z-index: 1000; opacity: 0; animation: fadeIn 0.2s forwards;
@@ -172,19 +125,16 @@
         .modal-header.error { color: var(--p-critical); }
         .modal-header.warning { color: var(--p-warning); }
         .modal-header.success { color: var(--p-success); }
+        .modal-header.info { color: var(--p-interactive); }
         
         @keyframes fadeIn { to { opacity: 1; } }
         @keyframes scaleUp { to { transform: scale(1); } }
 
-        /* Toast Notification */
         .polaris-toast {
             position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #202223; color: white; 
-            padding: 12px 16px; border-radius: 4px; font-size: 14px; display: none; z-index: 1000; align-items: center; gap: 8px;
+            padding: 12px 16px; border-radius: 4px; font-size: 14px; display: none; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); align-items: center; gap: 8px;
         }
     </style>
-
-
-
 </head>
 <body>
 
@@ -192,7 +142,6 @@
         <div style="display: flex; justify-content: flex-start;"></div>
         <h1>REGISTRAR PRODUCTOS</h1>
         <div style="display: flex; justify-content: flex-end;">
-            <!-- Redirigir al Panel de Control (Inventario) si el usuario lo desea manualmente -->
             <span class="material-icons-outlined icon-btn" onclick="window.location.href='Control.html'" title="Volver al Panel" style="font-size: 24px;">add_shopping_cart</span>
         </div>
     </header>
@@ -200,7 +149,6 @@
     <div class="form-layout">
         <form id="form-ingreso" onsubmit="event.preventDefault(); guardarIngreso();">
             
-            <!-- TARJETA 1: DATOS DEL DOCUMENTO -->
             <div class="polaris-card">
                 <div class="polaris-card-header">DETALLES DEL DOCUMENTO</div>
                 <div class="polaris-card-body form-grid">
@@ -210,28 +158,17 @@
                     </div>
                     <div class="polaris-field">
                         <label class="polaris-label">Fecha de ingreso</label>
-                        <input type="date" id="in-fecha" class="polaris-input" required readonly title="La fecha se asigna automáticamente al día de hoy">
+                        <input type="date" id="in-fecha" class="polaris-input" required readonly title="Asignado automáticamente">
                     </div>
                     
-                    <div class="polaris-field">
-                        <label class="polaris-label">Almacén de destino</label>
+                    <div class="polaris-field full-width">
+                        <label class="polaris-label">Almacén / Tienda de destino</label>
                         <select id="in-almacen" class="polaris-input" required>
-                            <option value="" disabled selected>Seleccione...</option>
-                            <option value="A1C1">A1C1</option>
-                            <option value="A1C2">A1C2</option>
-                            <option value="A1C3">A1C3</option>
-                            <option value="A2C1">A2C1</option>
-                            <option value="A2C2">A2C2</option>
-                            <option value="A2C3">A2C3</option>
-                            <option value="A3C1">A3C1</option>
-                            <option value="A3C2">A3C2</option>
-                            <option value="A3C3">A3C3</option>
-                        </select>
+                            </select>
                     </div>
                 </div>
             </div>
 
-            <!-- TARJETA 2: PRODUCTO -->
             <div class="polaris-card">
                 <div class="polaris-card-header">DETALLES DEL PRODUCTO</div>
                 <div class="polaris-card-body form-grid">
@@ -246,32 +183,17 @@
                     </div>
                     <div class="polaris-field full-width">
                         <label class="polaris-label">Nombre del producto</label>
-                        <input type="text" id="in-nombre" class="polaris-input" placeholder="Ej. Candado inteligente" required>
+                        <input type="text" id="in-nombre" class="polaris-input" placeholder="Ej. Taladro Percutor 500W" required>
                     </div>
                     
-                    <div class="polaris-field">
+                    <div class="polaris-field full-width">
                         <label class="polaris-label">Categoría</label>
                         <select id="in-categoria" class="polaris-input" required>
-                            <option value="" disabled selected>Seleccione...</option>
-                            <option value="Celulares">Celulares</option>
-                            <option value="Tecnología">Tecnología</option>
-                            <option value="Repuesto">Repuesto</option>
-                            <option value="Electrónica">Electrónica</option>
-                            <option value="Electrodomésticos">Electrodomésticos</option>
-                            <option value="Juguetes">Juguetes</option>
-                            <option value="Alimentos">Alimentos</option>
-                            <option value="Mascotas">Mascotas</option>
-                            <option value="Joyería">Joyería</option>
-                            <option value="Ropa">Ropa</option>
-                            <option value="Llaveros">Llaveros</option>
-                            <option value="Cosméticos">Cosméticos</option>
-                            <option value="Otros">Otros</option>
-                        </select>
+                            </select>
                     </div>
                 </div>
             </div>
 
-            <!-- TARJETA 3: COSTOS E INVENTARIO -->
             <div class="polaris-card">
                 <div class="polaris-card-header">Cálculo de Precios</div>
                 <div class="polaris-card-body form-grid">
@@ -283,15 +205,7 @@
                     <div class="polaris-field">
                         <label class="polaris-label">Unidad Medida</label>
                         <select id="in-unidad" class="polaris-input" required>
-                            <option value="" disabled selected>Seleccione...</option>
-                            <option value="UND">Und.</option>
-                            <option value="PAR">Par.</option>
-                            <option value="PAQU">Paqu.</option>
-                            <option value="KG">Kg.</option>
-                            <option value="TN">Tn.</option>
-                            <option value="LT">Lt.</option>
-                            <option value="ML">ml.</option>
-                        </select>
+                            </select>
                     </div>
                     
                     <div class="polaris-field">
@@ -309,7 +223,7 @@
                             <input type="text" id="in-precio-calculado" class="polaris-input has-prefix" value="0.00" readonly style="font-weight: 600; color: var(--p-action-primary); background-color: #f0fdf4; border-color: #bbf7d0;">
                         </div>
                         <span style="font-size: 10px; color: var(--p-text-subdued); margin-top: 2px;">
-                            (Costo / Cant) × 3 + IGV
+                            Costo + Margen Configurado + IGV
                         </span>
                     </div>
                 </div>
@@ -318,9 +232,8 @@
         </form>
     </div>
 
-    <!-- BOTONES FLOTANTES: SOLO ÍCONOS -->
     <div class="fab-container">
-        <button type="button" class="fab-button fab-template" onclick="descargarPlantilla()" title="Descargar Plantilla Base">
+        <button type="button" class="fab-button fab-template" onclick="descargarPlantillaDinamica()" title="Descargar Plantilla Base">
             <span class="material-icons-outlined" style="font-size: 22px;">file_download</span>
         </button>
 
@@ -330,20 +243,14 @@
         <input type="file" id="import-excel" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display: none;">
     </div>
 
-    <!-- BARRA INFERIOR (GUARDAR) -->
     <div class="polaris-bottom-bar">
         <div class="price-summary">
-            <span>Precio del Producto</span>
+            <span>Precio Sugerido Unit.</span>
             <strong id="bar-precio">S/. 0.00</strong>
         </div>
         <button type="submit" form="form-ingreso" class="polaris-btn-primary">GUARDAR LOTE</button>
     </div>
 
-    <!-- ==========================================
-         MODALES DE SISTEMA Y TOASTS
-         ========================================== -->
-    
-    <!-- Modal de Alertas -->
     <div id="modal-alerta" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header" id="alerta-header">
@@ -357,15 +264,16 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast" class="polaris-toast">
         <span class="material-icons-outlined" style="font-size: 18px;" id="toast-icon">check_circle</span>
         <span id="toast-msg">Mensaje temporal</span>
     </div>
 
 <script>
+    'use strict';
+
     // ==========================================
-    // SISTEMA VISUAL DE ALERTAS PRO Y TOASTS
+    // SISTEMA VISUAL DE ALERTAS
     // ==========================================
     let alertaCallback = null;
 
@@ -378,24 +286,18 @@
         document.getElementById('alerta-mensaje').innerText = mensaje;
 
         header.className = 'modal-header'; 
-        if(tipo === 'error') {
-            header.classList.add('error'); icon.innerText = 'error';
-        } else if (tipo === 'warning') {
-            header.classList.add('warning'); icon.innerText = 'warning';
-        } else if (tipo === 'success') {
-            header.classList.add('success'); icon.innerText = 'check_circle';
-        }
+        if(tipo === 'error') { header.classList.add('error'); icon.innerText = 'error'; } 
+        else if (tipo === 'warning') { header.classList.add('warning'); icon.innerText = 'warning'; } 
+        else if (tipo === 'success') { header.classList.add('success'); icon.innerText = 'check_circle'; }
+        else if (tipo === 'info') { header.classList.add('info'); icon.innerText = 'info'; }
 
-        alertaCallback = callback; // Guardamos qué hacer después de dar "Entendido"
+        alertaCallback = callback;
         modal.style.display = 'flex';
     }
 
     function cerrarAlerta() {
         document.getElementById('modal-alerta').style.display = 'none';
-        if (alertaCallback) {
-            alertaCallback();
-            alertaCallback = null;
-        }
+        if (alertaCallback) { alertaCallback(); alertaCallback = null; }
     }
 
     function mostrarToast(mensaje) {
@@ -406,55 +308,98 @@
     }
 
     // ==========================================
-    // 1. INICIALIZACIÓN, FECHA AUTOMÁTICA Y SEGURIDAD
+    // 1. INICIALIZACIÓN Y ONBOARDING ESTRICTO
     // ==========================================
     window.onload = () => {
-        // --- INICIO DEL GUARDIÁN ---
         const sesionStr = localStorage.getItem('isa_sesion');
-        
-        if (!sesionStr) {
-            window.location.href = 'index.html'; // Expulsar si no hay sesión
-            return;
-        }
+        if (!sesionStr) { window.location.href = 'index.html'; return; }
 
         const sesion = JSON.parse(sesionStr);
-        
-        // Control RBAC: Vendedores NO deben registrar ingresos (solo Logística, Gerentes o Admins)
         if (sesion.rol === 'Vendedor') {
-            alert('Acceso Denegado: Su rol de Vendedor no tiene permisos para ingresar nueva mercadería al sistema.');
-            window.location.href = 'RegistroSalidas.html'; // Lo devolvemos a su caja
-            return;
+            alert('Acceso Denegado: Su rol de Vendedor no tiene permisos para ingresar mercadería.');
+            window.location.href = 'RegistroSalidas.html'; return;
         }
-        // --- FIN DEL GUARDIÁN ---
 
-        // Si pasa la seguridad, cargamos la fecha de hoy
-        const hoy = new Date().toISOString().split('T')[0];
-        document.getElementById('in-fecha').value = hoy;
+        document.getElementById('in-fecha').value = new Date().toISOString().split('T')[0];
+        
+        // Ejecutar verificación de catálogos
+        verificarSistemaNuevoYCatalogos();
     };
 
+    function verificarSistemaNuevoYCatalogos() {
+        // Leer directamente los arreglos desde LocalStorage (sin inyectar defaults todavía)
+        const catAlmacenes = JSON.parse(localStorage.getItem('isa_cat_almacenes'));
+        const catCategorias = JSON.parse(localStorage.getItem('isa_cat_categorias'));
+        const catUnidades = JSON.parse(localStorage.getItem('isa_cat_unidades'));
+
+        // Si ALGUNO de los catálogos no existe o está vacío (length === 0)
+        if (!catAlmacenes || catAlmacenes.length === 0 ||
+            !catCategorias || catCategorias.length === 0 ||
+            !catUnidades || catUnidades.length === 0) {
+            
+            // Los menús desplegables quedan intencionalmente vacíos
+            document.getElementById('in-almacen').innerHTML = '<option value="" disabled selected>-- Vacío --</option>';
+            document.getElementById('in-categoria').innerHTML = '<option value="" disabled selected>-- Vacío --</option>';
+            document.getElementById('in-unidad').innerHTML = '<option value="" disabled selected>-- Vacío --</option>';
+
+            // Lanza la alerta obligatoria
+            mostrarAlerta(
+                "¡Nuevo Sistema Detectado!", 
+                "Aún no ha configurado los datos básicos de su negocio.\n\nPara empezar a registrar productos, por favor diríjase primero al panel de 'Configuración' y agregue sus Almacenes, Categorías y Unidades de Medida.", 
+                "info",
+                () => {
+                    // Opcional: Podrías redirigirlo forzosamente aquí
+                    // window.location.href = 'Configuracion.html';
+                }
+            );
+        } else {
+            // Si todo está bien, cargamos los datos en los menús
+            cargarCatalogosDinamicos(catCategorias, catAlmacenes, catUnidades);
+        }
+    }
+
+    function cargarCatalogosDinamicos(categorias, almacenes, unidades) {
+        const llenarSelect = (idSelect, arregloDatos, textoDefault) => {
+            const select = document.getElementById(idSelect);
+            if (!select) return;
+            select.innerHTML = `<option value="" disabled selected>-- ${textoDefault} --</option>`;
+            arregloDatos.forEach(item => {
+                select.innerHTML += `<option value="${item}">${item}</option>`;
+            });
+        };
+
+        llenarSelect('in-categoria', categorias, 'Seleccione Categoría');
+        llenarSelect('in-almacen', almacenes, 'Seleccione Almacén');
+        llenarSelect('in-unidad', unidades, 'Seleccione Medida');
+    }
+
     // ==========================================
-    // 2. LÓGICA MATEMÁTICA PARA FIJACIÓN DE PRECIOS
+    // 2. MOTOR MATEMÁTICO UNIVERSAL
     // ==========================================
     function calcularPrecioVenta() {
         const cantidad = parseFloat(document.getElementById('in-cantidad').value) || 0;
         const costoTotal = parseFloat(document.getElementById('in-costo-total').value) || 0;
         
+        const config = JSON.parse(localStorage.getItem('isa_config')) || {};
+        const margen = parseFloat(config.margenSugerido) || 30; 
+        const igv = parseFloat(config.igv) || 18; 
+
         let precioVentaSugerido = 0;
 
         if (cantidad > 0 && costoTotal > 0) {
             const costoUnitario = costoTotal / cantidad;
-            const precioBase = costoUnitario * 3;
-            precioVentaSugerido = precioBase * 1.18;
+            const ganancia = costoUnitario * (margen / 100);
+            const precioBase = costoUnitario + ganancia;
+            precioVentaSugerido = precioBase * (1 + (igv / 100));
         }
         
         const precioFormateado = precioVentaSugerido.toFixed(2);
-        
         document.getElementById('in-precio-calculado').value = precioFormateado;
         document.getElementById('bar-precio').innerText = `S/. ${precioFormateado}`;
     }
 
     // ==========================================
-    // 3. GUARDAR MANUALMENTE UN SOLO INGRESO
+    // 3. GUARDAR MANUALMENTE UN INGRESO
     // ==========================================
     function guardarIngreso() {
         const numDoc = document.getElementById('in-documento').value.trim().toUpperCase();
@@ -466,18 +411,15 @@
         const cantidad = parseFloat(document.getElementById('in-cantidad').value);
         const costoTotal = parseFloat(document.getElementById('in-costo-total').value);
 
-        if (!almacen) return mostrarAlerta("Campos Incompletos", "Debe seleccionar un Almacén de destino.", "warning");
-        if (!unidad) return mostrarAlerta("Campos Incompletos", "Debe seleccionar una Unidad de medida.", "warning");
-        if (!numDoc || !codProd || !nombreProd || !categoria) return mostrarAlerta("Campos Incompletos", "Por favor, complete todos los campos de texto.", "warning");
-        if (isNaN(cantidad) || cantidad <= 0) return mostrarAlerta("Cantidad Inválida", "La cantidad ingresada debe ser mayor a 0.", "error");
-        if (isNaN(costoTotal) || costoTotal <= 0) return mostrarAlerta("Costo Inválido", "El costo total del lote debe ser mayor a 0.", "error");
+        if (!almacen || !unidad || !categoria) return mostrarAlerta("Campos Incompletos", "Debe configurar y seleccionar opciones de los menús desplegables.", "warning");
+        if (!numDoc || !codProd || !nombreProd) return mostrarAlerta("Campos Incompletos", "Complete todos los campos de texto.", "warning");
+        if (isNaN(cantidad) || cantidad <= 0) return mostrarAlerta("Cantidad Inválida", "La cantidad debe ser mayor a 0.", "error");
+        if (isNaN(costoTotal) || costoTotal <= 0) return mostrarAlerta("Costo Inválido", "El costo total debe ser mayor a 0.", "error");
 
         let bdActual = JSON.parse(localStorage.getItem('isa_ingresos_db')) || [];
         
-        // Bloquear códigos repetidos
-        const existeCodigoBD = bdActual.some(item => item.cod.toUpperCase() === codProd && !item.anulado);
-        if (existeCodigoBD) {
-            return mostrarAlerta("Código Duplicado", `El código "${codProd}" ya está registrado en el sistema.\nLos códigos de producto deben ser únicos.`, "error");
+        if (bdActual.some(item => item.cod.toUpperCase() === codProd && !item.anulado)) {
+            return mostrarAlerta("Código Duplicado", `El código "${codProd}" ya está registrado.\nLos SKU deben ser únicos.`, "error");
         }
 
         const nuevoIngreso = {
@@ -493,51 +435,77 @@
             costoTotalUSD: costoTotal,
             precioUnitarioPEN: parseFloat(document.getElementById('in-precio-calculado').value),
             anulado: false
-        };
+        }
         
         bdActual.unshift(nuevoIngreso);
         localStorage.setItem('isa_ingresos_db', JSON.stringify(bdActual));
 
-        mostrarToast(`Lote de ${nombreProd} guardado correctamente.`);
-        
-        setTimeout(() => { 
-            // REDIRECCIÓN CAMBIADA: Recarga la misma página para un flujo de trabajo continuo
-            window.location.href = 'RegistroIngresos.html';
-        }, 1500);
+        mostrarToast(`Lote guardado correctamente.`);
+        setTimeout(() => { window.location.reload(); }, 1500);
     }
 
     // ==========================================
-    // 4. DESCARGAR LA PLANTILLA OFICIAL EXACTA
+    // 4. PLANTILLA DINÁMICA CON SHEETJS
     // ==========================================
-    function descargarPlantilla() {
-        const plantillaBase64 = "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";
+    function descargarPlantillaDinamica() {
+        try {
+            // Leer los catálogos en tiempo real (Aquí si inyectamos un array vacío si no existe para que no colapse el Excel)
+            const catAlmacenes = JSON.parse(localStorage.getItem('isa_cat_almacenes')) || [];
+            const catCategorias = JSON.parse(localStorage.getItem('isa_cat_categorias')) || [];
+            const catUnidades = JSON.parse(localStorage.getItem('isa_cat_unidades')) || [];
 
-        const byteCharacters = atob(plantillaBase64);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
+            if (catAlmacenes.length === 0 || catCategorias.length === 0 || catUnidades.length === 0) {
+                return mostrarAlerta("Acción Bloqueada", "Debe agregar datos en 'Configuración' antes de descargar la plantilla.", "warning");
+            }
+
+            const hojaPrincipalDatos = [
+                ["Nº de documento", "Codigo", "Nombre del Producto", "Categoria", "Almacen", "Unidad", "Cantidad", "Costo Total"],
+                ["F-0001", "PROD-DEMO", "EJEMPLO DE PRODUCTO", catCategorias[0], catAlmacenes[0], catUnidades[0], 10, 150.50]
+            ];
+            const wsPrincipal = XLSX.utils.aoa_to_sheet(hojaPrincipalDatos);
+            wsPrincipal['!cols'] = [{wch: 18}, {wch: 15}, {wch: 30}, {wch: 20}, {wch: 20}, {wch: 10}, {wch: 10}, {wch: 15}];
+
+            const maxFilas = Math.max(catCategorias.length, catAlmacenes.length, catUnidades.length);
+            const hojaValoresDatos = [["Categorias Permitidas", "Almacenes Permitidos", "Unidades Permitidas"]];
+            
+            for (let i = 0; i < maxFilas; i++) {
+                hojaValoresDatos.push([
+                    catCategorias[i] || "",
+                    catAlmacenes[i] || "",
+                    catUnidades[i] || ""
+                ]);
+            }
+            const wsValores = XLSX.utils.aoa_to_sheet(hojaValoresDatos);
+            wsValores['!cols'] = [{wch: 25}, {wch: 25}, {wch: 20}];
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, wsPrincipal, "Plantilla_ISA");
+            XLSX.utils.book_append_sheet(wb, wsValores, "Valores_Permitidos");
+
+            XLSX.writeFile(wb, "PLANTILLA_DE_INVENTARIO_ISA.xlsx");
+            mostrarToast("Plantilla generada y descargada.");
+        } catch (error) {
+            console.error("Error al generar la plantilla:", error);
+            mostrarAlerta("Error", "No se pudo generar la plantilla dinámica.", "error");
         }
-        const byteArray = new Uint8Array(byteNumbers);
-        
-        const blob = new Blob([byteArray], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "PLANTILLA_DE_INVETARIO_ISA.xlsx";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
     }
 
     // ==========================================
-    // 5. CEREBRO DE IMPORTACIÓN MASIVA ESTRICTO
+    // 5. IMPORTADOR MASIVO INTELIGENTE
     // ==========================================
     document.getElementById('import-excel').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
 
-        e.target.value = null; // Reset input
+        e.target.value = null; 
+
+        const catAlmacenes = JSON.parse(localStorage.getItem('isa_cat_almacenes')) || [];
+        const catCategorias = JSON.parse(localStorage.getItem('isa_cat_categorias')) || [];
+        const catUnidades = JSON.parse(localStorage.getItem('isa_cat_unidades')) || [];
+
+        if (catAlmacenes.length === 0 || catCategorias.length === 0 || catUnidades.length === 0) {
+            return mostrarAlerta("Importación Bloqueada", "Debe agregar Almacenes, Categorías y Unidades en 'Configuración' antes de importar.", "error");
+        }
 
         const reader = new FileReader();
         reader.onload = function(evt) {
@@ -552,20 +520,13 @@
                     return mostrarAlerta("Archivo Vacío", "El archivo Excel está vacío o no tiene el formato correcto.", "warning");
                 }
 
-                const almacenesValidos = ["A1C1", "A1C2", "A1C3", "A2C1", "A2C2", "A2C3", "A3C1", "A3C2", "A3C3"];
-                
-                const categoriasValidas = [
-                    "CELULARES", "TECNOLOGÍA", "TECNOLOGIA", "REPUESTO", "ELECTRÓNICA", "ELECTRONICA", 
-                    "ELECTRODOMÉSTICOS", "ELECTRODOMESTICOS", "JUGUETES", "ALIMENTOS", "MASCOTAS", 
-                    "JOYERÍA", "JOYERIA", "ROPA", "LLAVEROS", "COSMÉTICOS", "COSMETICOS", "OTROS"
-                ];
-                
-                const unidadesValidas = ["UND", "PAR", "PAQU", "KG", "TN", "LT", "ML"];
-                const unidadesEnteras = ["UND", "PAR", "PAQU"];
-
                 let bdActual = JSON.parse(localStorage.getItem('isa_ingresos_db')) || [];
                 let productosValidados = [];
                 let codigosEnExcel = []; 
+
+                const config = JSON.parse(localStorage.getItem('isa_config')) || {};
+                const margen = parseFloat(config.margenSugerido) || 30;
+                const igv = parseFloat(config.igv) || 18;
 
                 for (let i = 0; i < json.length; i++) {
                     const row = json[i];
@@ -584,37 +545,33 @@
                     }
 
                     if (codigosEnExcel.includes(codProd)) {
-                        return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nEl código "${codProd}" está repetido dentro del archivo Excel.\nAsegúrese de que no haya códigos duplicados en su lista.`, "error");
+                        return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nEl código "${codProd}" está repetido dentro del archivo Excel.`, "error");
                     }
                     codigosEnExcel.push(codProd);
 
                     const existeEnBD = bdActual.some(item => item.cod.toUpperCase() === codProd && !item.anulado);
                     if (existeEnBD) {
-                        return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nEl código "${codProd}" ya se encuentra registrado en el sistema de inventario.\nIngrese un código diferente para los nuevos productos.`, "error");
+                        return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nEl código "${codProd}" ya se encuentra registrado en el inventario.`, "error");
                     }
 
                     const almacen = (row['Almacen'] || row['Almacén'] || "").toString().trim().toUpperCase();
-                    if (!almacenesValidos.includes(almacen)) {
-                        return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nEl almacén "${almacen}" no existe. Revisa la hoja 'Valores_Permitidos' en tu Excel.`, "error");
+                    if (!catAlmacenes.includes(almacen)) {
+                        return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nEl almacén "${almacen}" no está registrado en tu Configuración.`, "error");
                     }
 
                     const categoria = (row['Categoria'] || row['Categoría'] || "").toString().trim().toUpperCase();
-                    if (!categoriasValidas.includes(categoria)) {
-                        return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nLa categoría "${categoria}" no es válida. Revisa la hoja 'Valores_Permitidos' en tu Excel.`, "error");
+                    if (!catCategorias.includes(categoria)) {
+                        return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nLa categoría "${categoria}" no está registrada en tu Configuración.`, "error");
                     }
 
                     const unidadCruda = (row['Unidad'] || "").toString().trim().toUpperCase().replace(/\./g, '');
-                    if (!unidadesValidas.includes(unidadCruda)) {
-                        return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nLa unidad "${row['Unidad']}" no es válida. Revisa la hoja 'Valores_Permitidos' en tu Excel.`, "error");
+                    if (!catUnidades.includes(unidadCruda)) {
+                        return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nLa unidad de medida "${unidadCruda}" no está registrada en tu Configuración.`, "error");
                     }
 
                     const cantidad = parseFloat(row['Cantidad']);
                     if (isNaN(cantidad) || cantidad <= 0) {
                         return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nLa cantidad ingresada debe ser mayor a 0.`, "error");
-                    }
-
-                    if (unidadesEnteras.includes(unidadCruda) && !Number.isInteger(cantidad)) {
-                        return mostrarAlerta("Importación Cancelada", `ERROR EN FILA ${filaExcel}:\nHa intentado ingresar cantidad con decimales (${cantidad}) para la unidad "${unidadCruda}".\nPor favor, use solo números enteros.`, "error");
                     }
                     
                     let costoCrudo = row['Costo Total'] || row['Precio Total'] || 0;
@@ -625,24 +582,11 @@
                     }
 
                     const fechaAutomatica = new Date().toISOString().split('T')[0];
+                    
                     const costoUnitario = costoTotal / cantidad;
-                    const precioBase = costoUnitario * 3;
-                    const precioSug = parseFloat((precioBase * 1.18).toFixed(2));
-
-                    let catFormateada = "General";
-                    if(categoria === "CELULARES") catFormateada = "Celulares";
-                    if(categoria === "TECNOLOGÍA" || categoria === "TECNOLOGIA") catFormateada = "Tecnología";
-                    if(categoria === "REPUESTO") catFormateada = "Repuesto";
-                    if(categoria === "ELECTRÓNICA" || categoria === "ELECTRONICA") catFormateada = "Electrónica";
-                    if(categoria === "ELECTRODOMÉSTICOS" || categoria === "ELECTRODOMESTICOS") catFormateada = "Electrodomésticos";
-                    if(categoria === "JUGUETES") catFormateada = "Juguetes";
-                    if(categoria === "ALIMENTOS") catFormateada = "Alimentos";
-                    if(categoria === "MASCOTAS") catFormateada = "Mascotas";
-                    if(categoria === "JOYERÍA" || categoria === "JOYERIA") catFormateada = "Joyería";
-                    if(categoria === "ROPA") catFormateada = "Ropa";
-                    if(categoria === "LLAVEROS") catFormateada = "Llaveros";
-                    if(categoria === "COSMÉTICOS" || categoria === "COSMETICOS") catFormateada = "Cosméticos";
-                    if(categoria === "OTROS") catFormateada = "Otros";
+                    const ganancia = costoUnitario * (margen / 100);
+                    const precioBase = costoUnitario + ganancia;
+                    const precioSug = parseFloat((precioBase * (1 + (igv / 100))).toFixed(2));
 
                     const nuevoIngresoMasivo = {
                         id: Date.now().toString() + Math.floor(Math.random() * 1000) + i,
@@ -651,7 +595,7 @@
                         almacen: almacen,
                         cod: codProd,
                         nombre: nombreProd,
-                        categoria: catFormateada,
+                        categoria: categoria,
                         cant: cantidad,
                         unidad: unidadCruda, 
                         costoTotalUSD: costoTotal,
@@ -666,10 +610,9 @@
                     bdActual = [...productosValidados.reverse(), ...bdActual]; 
                     localStorage.setItem('isa_ingresos_db', JSON.stringify(bdActual));
                     
-                    // Alerta de éxito con redirección a la misma página
                     mostrarAlerta(
                         "¡Importación Exitosa!", 
-                        `Se validaron y subieron ${productosValidados.length} productos a la base de datos con Fecha y Precio automático.`, 
+                        `Se validaron y subieron ${productosValidados.length} productos a la base de datos con Fecha y Precio automático calculado al ${margen}%.`, 
                         "success", 
                         () => { window.location.href = 'RegistroIngresos.html'; }
                     );
@@ -677,7 +620,7 @@
 
             } catch(error) {
                 console.error(error);
-                mostrarAlerta("Error Crítico", "Hubo un error al procesar el archivo Excel. Asegúrate de estar usando la plantilla oficial.", "error");
+                mostrarAlerta("Error Crítico", "Hubo un error al procesar el archivo Excel. Asegúrate de estar usando la plantilla generada por el sistema.", "error");
             }
         };
         
