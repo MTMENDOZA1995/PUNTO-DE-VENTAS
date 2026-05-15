@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ISA - Historial de Ventas</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
-   <!-- (SEGURIDAD...) -->
-    <script src="seguridad.js"></script>
+   <script src="seguridad.js"></script>
    
    <style>
         /* ==========================================
@@ -188,14 +187,9 @@
         .polaris-toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 20px; border-radius: 6px; font-size: 14px; display: none; z-index: 1000; align-items: center; gap: 8px;}
     </style>
 
-
-
 </head>
 <body>
 
-    <!-- ==========================================
-         SECCIÓN FIJA (HEADER + KPIs + BÚSQUEDA)
-         ========================================== -->
     <div class="top-fixed-section">
         <header class="polaris-header">
             <div></div>
@@ -243,20 +237,11 @@
         </div>
     </div>
 
-    <!-- ==========================================
-         SECCIÓN DESLIZABLE (SCROLL LIST)
-         ========================================== -->
     <div class="scrollable-list">
         <div class="sales-list" id="ventas-container">
-            <!-- Las tarjetas se generan por JavaScript -->
-        </div>
+            </div>
     </div>
 
-    <!-- ==========================================
-         MODALES DE SISTEMA Y TOASTS
-         ========================================== -->
-    
-    <!-- Modal de Alertas Simples -->
     <div id="modal-alerta" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header warning" id="alerta-header">
@@ -270,7 +255,6 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmación para Anular -->
     <div id="modal-confirm" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header error">
@@ -290,9 +274,6 @@
         <span id="toast-msg">Operación exitosa</span>
     </div>
 
-<!-- ==========================================
-     VINCULACIÓN AL ARCHIVO EXTERNO DE TICKET
-     ========================================== -->
 <script src="ticket.js"></script>
 
 <script>
@@ -359,12 +340,16 @@
     }
 
     // ==========================================
-    // RENDERIZADO DE LA INTERFAZ
+    // RENDERIZADO DE LA INTERFAZ (CON FALLBACKS Y % DINÁMICO)
     // ==========================================
     function renderizarVentas(datos) {
         const contenedor = document.getElementById('ventas-container');
         contenedor.innerHTML = '';
         
+        // Obtener IGV actual configurado para la etiqueta visual
+        const configGuardada = JSON.parse(localStorage.getItem('isa_config')) || {};
+        const igvConfigurado = configGuardada.igv !== undefined ? configGuardada.igv : 18;
+
         let totalRecaudado = 0;
         let ventasValidasCount = 0; 
 
@@ -388,23 +373,34 @@
             let claseBadge = (tipoPago === 'Efectivo') ? 'badge-efectivo' : 'badge-digital';
             if(item.anulado) { tipoPago = "ANULADA"; claseBadge = "badge-anulado"; }
 
-            let resumenProductos = "";
-            if(item.productos && item.productos.length > 0) {
-                const nombres = item.productos.map(p => `• ${p.cantidad}x ${p.nombre}`).join('<br>');
-                resumenProductos = `<div class="product-list">${nombres}</div>`;
-            } else {
-                resumenProductos = `<div class="product-list">• ${item.cantidad}x ${item.nombreProd}</div>`;
+            // SAFE FALLBACK: Evitar error "split is not a function" si el nombre es undefined
+            let nomVendedor = "No Registrado";
+            if (item.nombreVendedor) {
+                nomVendedor = item.nombreVendedor.split(' ')[0];
+            } else if (item.idVendedor) {
+                nomVendedor = item.idVendedor;
             }
 
-            // Lógica para mostrar el descuento si existe
+            // SAFE FALLBACK: Evitar error si "productos" no existe o no es un arreglo
+            let resumenProductos = "";
+            if(item.productos && Array.isArray(item.productos) && item.productos.length > 0) {
+                const nombres = item.productos.map(p => `• ${p.cantidad}x ${p.nombre || 'Desconocido'}`).join('<br>');
+                resumenProductos = `<div class="product-list">${nombres}</div>`;
+            } else {
+                resumenProductos = `<div class="product-list">• ${item.cantidad || 0}x ${item.nombreProd || 'Producto Desconocido'}</div>`;
+            }
+
             let descuentoHtml = "";
             if(item.desc && parseFloat(item.desc) > 0) {
                 descuentoHtml = `<div class="fin-detail" style="color: var(--danger);"><span>Descuento:</span> <span>-${formatoSoles.format(item.desc)}</span></div>`;
             }
 
+            // Validar que exista la boleta
+            const boletaSegura = item.boleta ? String(item.boleta).padStart(6, '0') : '000000';
+
             card.innerHTML = `
                 <div class="card-header">
-                    <div class="ticket-id"><span class="material-icons-outlined" style="font-size: 16px;">receipt</span> BOL-${String(item.boleta).padStart(6, '0')}</div>
+                    <div class="ticket-id"><span class="material-icons-outlined" style="font-size: 16px;">receipt</span> BOL-${boletaSegura}</div>
                     <div class="pay-badge ${claseBadge}">${tipoPago}</div>
                 </div>
                 
@@ -412,15 +408,15 @@
                     <div class="info-row">
                         <div class="info-icon"><span class="material-icons-outlined" style="font-size: 16px;">person</span></div>
                         <div class="info-data">
-                            <strong>${item.nombreCliente}</strong>
-                            <small>DNI: ${item.dniCliente} &nbsp;•&nbsp; ${item.fecha}</small>
+                            <strong>${item.nombreCliente || 'Cliente General'}</strong>
+                            <small>DNI: ${item.dniCliente || 'S/D'} &nbsp;•&nbsp; ${item.fecha || '--/--/----'}</small>
                         </div>
                     </div>
                     
                     <div class="info-row" style="margin-bottom: 0;">
                         <div class="info-icon" style="background: transparent; color: #64748b; padding:0;"><span class="material-icons-outlined" style="font-size: 16px;">storefront</span></div>
                         <div class="info-data">
-                            <strong>Cajero: ${item.nombreVendedor}</strong>
+                            <strong>Cajero: ${nomVendedor}</strong>
                             ${resumenProductos}
                         </div>
                     </div>
@@ -428,7 +424,7 @@
                     <div class="financial-block">
                         <div class="fin-detail"><span>Subtotal:</span> <span>${formatoSoles.format(item.subtotal || 0)}</span></div>
                         ${descuentoHtml}
-                        <div class="fin-detail"><span>IGV (18%):</span> <span>${formatoSoles.format(item.igv || 0)}</span></div>
+                        <div class="fin-detail"><span>IGV (${igvConfigurado}%):</span> <span>${formatoSoles.format(item.igv || 0)}</span></div>
                         <div class="fin-detail"><span>Bolsa Plástica:</span> <span>${formatoSoles.format(item.bolsa || 0)}</span></div>
                         <div class="fin-total"><span>TOTAL</span> <span>${formatoSoles.format(item.total || 0)}</span></div>
                     </div>
@@ -439,7 +435,7 @@
                         <span class="material-icons-outlined" style="font-size: 14px;">print</span> Ticket
                     </button>
                     
-                    <button class="btn-action delete" onclick="anularVenta('${item.id}', '${item.boleta}')" ${item.anulado ? 'disabled' : ''}>
+                    <button class="btn-action delete" onclick="anularVenta('${item.id}', '${boletaSegura}')" ${item.anulado ? 'disabled' : ''}>
                         <span class="material-icons-outlined" style="font-size: 14px;">${item.anulado ? 'block' : 'cancel'}</span> Anular
                     </button>
                 </div>
@@ -451,26 +447,34 @@
         document.getElementById('txt-count').innerText = ventasValidasCount;
     }
 
+    // ==========================================
+    // BÚSQUEDA OPTIMIZADA
+    // ==========================================
     function aplicarFiltros() {
         let valFecha = document.getElementById('filtro-fecha').value; 
-        const valBoleta = document.getElementById('filtro-boleta').value.toLowerCase();
-        const valCliente = document.getElementById('filtro-cliente').value.toLowerCase();
+        const valBoleta = document.getElementById('filtro-boleta').value.toLowerCase().trim();
+        const valCliente = document.getElementById('filtro-cliente').value.toLowerCase().trim();
 
         if(valFecha) {
             const parts = valFecha.split('-');
-            valFecha = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            valFecha = `${parts[2]}/${parts[1]}/${parts[0]}`; // Formatea YYYY-MM-DD a DD/MM/YYYY
         }
 
         let ventasDB = obtenerVentas();
         let datosFiltrados = ventasDB.filter(item => {
             const matchFecha = valFecha === "" || (item.fecha || "") === valFecha;
-            const matchBoleta = (item.boleta || "").toLowerCase().includes(valBoleta);
+            // Safe string conversion to avoid errors on null/undefined
+            const matchBoleta = (item.boleta || "").toString().toLowerCase().includes(valBoleta);
+            
+            // Busca en Nombre o DNI simultáneamente
             const strCliente = ((item.dniCliente || "") + " " + (item.nombreCliente || "")).toLowerCase();
-            const matchCliente = strCliente.includes(valCliente);
+            const matchCliente = valCliente === "" || strCliente.includes(valCliente);
+            
             return matchFecha && matchBoleta && matchCliente;
         });
 
-        datosFiltrados.sort((a, b) => parseInt(b.boleta) - parseInt(a.boleta));
+        // Ordenar siempre de la más reciente a la más antigua
+        datosFiltrados.sort((a, b) => parseInt(b.boleta || 0) - parseInt(a.boleta || 0));
         renderizarVentas(datosFiltrados);
     }
 
@@ -484,9 +488,9 @@
     // ==========================================
     // ANULAR VENTA CON MODAL PRO
     // ==========================================
-    function anularVenta(id, boleta) {
+    function anularVenta(id, boletaTexto) {
         mostrarConfirmacion(
-            `⚠️ ATENCIÓN: ¿Está seguro que desea ANULAR la boleta N° BOL-${String(boleta).padStart(6, '0')}?\n\nEl registro dejará de sumar a los ingresos y el stock volverá al inventario.`,
+            `⚠️ ATENCIÓN: ¿Está seguro que desea ANULAR la boleta N° BOL-${boletaTexto}?\n\nEl registro dejará de sumar a los ingresos y el stock volverá al inventario.`,
             () => {
                 let ventasDB = obtenerVentas();
                 const index = ventasDB.findIndex(item => item.id === id);
@@ -494,7 +498,7 @@
                     ventasDB[index].anulado = true;
                     localStorage.setItem('isa_ventas_db', JSON.stringify(ventasDB));
                     aplicarFiltros();
-                    mostrarToast(`Boleta BOL-${String(boleta).padStart(6, '0')} ha sido anulada.`, true);
+                    mostrarToast(`Boleta BOL-${boletaTexto} ha sido anulada.`, true);
                 }
             }
         );
@@ -507,12 +511,12 @@
         const ventasDB = obtenerVentas();
         const venta = ventasDB.find(v => v.id === id);
         
-        if(!venta) return mostrarAlerta("Error", "No se encontró el registro de la venta en la base de datos.", "error");
+        if(!venta) return mostrarAlerta("Error de Lectura", "No se pudo recuperar la información de este ticket en la base de datos.", "error");
 
         if (typeof imprimirTicketGlobal === 'function') {
             imprimirTicketGlobal(venta);
         } else {
-            mostrarAlerta("Error de Sistema", "No se encontró el archivo 'ticket.js'. Asegúrese de que esté en la misma carpeta para poder imprimir.", "error");
+            mostrarAlerta("Librería Faltante", "El módulo de impresión ('ticket.js') no está conectado correctamente.", "error");
         }
     }
 
@@ -542,6 +546,8 @@
         // Si pasa la seguridad, cargamos la página
         const hoy = new Date();
         document.getElementById('txt-fecha').innerHTML = `Generado: <strong>${hoy.toLocaleDateString('es-PE')}</strong>`;
+        
+        // Cargar las ventas al inicio
         aplicarFiltros(); 
     };
 </script>
